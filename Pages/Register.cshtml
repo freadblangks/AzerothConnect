@@ -1,0 +1,38 @@
+﻿@page
+@model AzerothConnect.Pages.RegisterModel
+@{
+}
+
+<form method="POST" style="display: flex; flex-direction: column; gap: 1rem">
+    <div style="display: flex; flex-direction: column">
+        <label>Username</label>
+        <input type="text" name="username" />
+    </div>
+
+    <div style="display: flex; flex-direction: column">
+        <label>Email</label>
+        <input type="email" name="email" />
+    </div>
+
+    <div style="display: flex; flex-direction: column">
+        <label>Password</label>
+        <input type="password" name="password" />
+    </div>
+
+    <div style="display: flex; flex-direction: column">
+        <label>Repeat Password</label>
+        <input type="password" name="passwordVerify" />
+    </div>
+
+    <button>Create account</button>
+</form>
+
+@if(Model.Error is not null)
+{
+    <h1>@Model.Error</h1>
+}
+
+@if (Model.Success is not null)
+{
+    <h1>@Model.Success</h1>
+}
