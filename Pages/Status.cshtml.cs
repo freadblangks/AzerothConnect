@@ -12,8 +12,4 @@ public class StatusModel : PageModel
     {
         HealthCheckStoreService = healthCheckStoreService;
     }
-
-    public void OnGet()
-    {
-    }
 }
