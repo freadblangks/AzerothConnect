@@ -1,0 +1,22 @@
+﻿@page
+@model StatusModel
+@{
+    ViewData["Status"] = "Status";
+}
+
+<div id="authstatus" style="display: flex; flex-direction: row; gap: 0.25rem">
+    <div>AuthServer</div>
+
+    <div style="display: flex; flex-direction: row; gap: 0.25rem; color: @(Model.HealthCheckStoreService.AuthStatus ? "green" : "red")">
+    @if(Model.HealthCheckStoreService.AuthStatus)
+    {
+        <i class="ph ph-chart-line-up"></i>
+        <div>Online</div>
+    }
+    else
+    {
+        <i class="ph ph-chart-line-down"></i>
+        <div>Offline</div>
+    }
+    </div>
+</div>

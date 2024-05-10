@@ -48,5 +48,7 @@ public class Program
         });
 
         app.Services.AddScoped<AccountService>();
+        app.Services.AddSingleton<HealthCheckStoreService>();
+        app.Services.AddHostedService<HealthCheckService>();
     }
 }
