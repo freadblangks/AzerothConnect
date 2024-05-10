@@ -53,7 +53,7 @@ namespace AzerothConnect.Services
                     bool result = false;
                     var client = new TcpClient();
 
-                    logger.LogDebug("Fetching auth server status..");
+                    logger.LogInformation("Fetching auth server status..");
 
                     try
                     {
@@ -73,7 +73,7 @@ namespace AzerothConnect.Services
                     var healthStore = scope.ServiceProvider.GetRequiredService<HealthCheckStoreService>();
                     healthStore.AuthStatus = result;
 
-                    logger.LogDebug($"Finished fetching auth server status in {(DateTime.Now - now).TotalMilliseconds}ms.");
+                    logger.LogInformation($"Finished fetching auth server status in {(DateTime.Now - now).TotalMilliseconds}ms.");
 
                     await Task.Delay(10000);
                 }
