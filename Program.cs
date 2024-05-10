@@ -1,3 +1,4 @@
+using AzerothConnect.Configuration;
 using AzerothConnect.Database.Contexts;
 using AzerothConnect.Services;
 
@@ -33,11 +34,13 @@ public class Program
 
     public static void AddServices(WebApplicationBuilder app)
     {
+        app.Services.Configure<AzerothConnectOptions>(app.Configuration.GetSection(AzerothConnectOptions.SectionName));
+
         app.Services.AddRazorPages();
 
         app.Services.AddDbContext<AuthDbContext>(db =>
         {
-            var mysqlInfo = app.Configuration.GetConnectionString("Auth");
+            var mysqlInfo = app.Configuration.GetConnectionString("AuthDatabase");
             if (string.IsNullOrEmpty(mysqlInfo))
             {
                 throw new NullReferenceException("The MySQL connection string was null or empty.");

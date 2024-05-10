@@ -1,4 +1,5 @@
 ﻿
+using AzerothConnect.Configuration;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -11,25 +12,36 @@ namespace AzerothConnect.Services
     {
         private readonly ILogger<HealthCheckService> logger;
         private readonly IServiceProvider serviceProvider;
-        private readonly IConfiguration config;
+        private readonly AzerothConnectOptions options;
 
         public HealthCheckService(ILogger<HealthCheckService> logger,
             IServiceProvider serviceProvider,
-            IConfiguration config)
+            IOptions<AzerothConnectOptions> options)
         {
             this.logger = logger;
             this.serviceProvider = serviceProvider;
-            this.config = config;
+            this.options = options.Value;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            if(!options.HealthChecksEnabled)
+            {
+                return;
+            }
+
             logger.LogInformation("Started health check background service.");
 
-            var authEndpoint = config.GetSection("Endpoints:AzerothCore:Auth").Value;
+            if(!options.Endpoints.ContainsKey("AuthServer"))
+            {
+                logger.LogError("Failed to find AuthServer endpoint in appsettings.json");
+                return;
+            }
+
+            var authEndpoint = options.Endpoints["AuthServer"];
             if(string.IsNullOrEmpty(authEndpoint))
             {
-                logger.LogError("Failed to get auth endpoint. Ensure endpoints are configured in appsettings.json.");
+                logger.LogError("AuthServer endpoint is null or empty");
                 return;
             }
 
@@ -45,7 +57,7 @@ namespace AzerothConnect.Services
                 }
             }
 
-            while (!stoppingToken.IsCancellationRequested)
+            while (!stoppingToken.IsCancellationRequested && options.HealthChecksEnabled)
             {
                 using (IServiceScope scope = serviceProvider.CreateAsyncScope())
                 {
