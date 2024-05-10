@@ -1,0 +1,63 @@
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+
+    min-height: 100vh;
+}
+
+header {
+    display: flex;
+    flex-direction: row;
+
+    padding: 1rem;
+
+    background-color: black;
+}
+
+header nav {
+    display: flex;
+    flex-direction: row;
+
+    gap: 1rem;
+}
+
+header nav a {
+    display: flex;
+    flex-direction: row;
+
+    align-items: center;
+
+    gap: 0.5rem;
+
+    color: white;
+    text-decoration: none;
+
+    transition: color 0.25s;
+}
+header nav a:hover {
+    color: dodgerblue;
+}
+
+main {
+    flex: 1;
+
+    padding: 1rem;
+}
+
+footer {
+    display: flex;
+    flex-direction: row;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 1rem;
+
+    color: white;
+    background-color: black;
+}
