@@ -20,3 +20,20 @@
     }
     </div>
 </div>
+
+<div id="worldstatus" style="display: flex; flex-direction: row; gap: 0.25rem">
+    <div>WorldServer</div>
+
+    <div style="display: flex; flex-direction: row; gap: 0.25rem; color: @(Model.HealthCheckStoreService.WorldStatus ? "green" : "red")">
+        @if (Model.HealthCheckStoreService.WorldStatus)
+        {
+            <i class="ph ph-chart-line-up"></i>
+            <div>Online</div>
+        }
+        else
+        {
+            <i class="ph ph-chart-line-down"></i>
+            <div>Offline</div>
+        }
+    </div>
+</div>

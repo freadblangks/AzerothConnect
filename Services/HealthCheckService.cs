@@ -43,50 +43,80 @@ public class HealthCheckService : BackgroundService
             return;
         }
 
-        int port = 3724;
+        var worldEndpoint = options.Endpoints["WorldServer"];
+        if (string.IsNullOrEmpty(worldEndpoint))
+        {
+            logger.LogError("WorldServer endpoint is null or empty");
+            return;
+        }
+
+        int authPort = 3724;
         string[] authSections = authEndpoint.Split(":");
-        string host = authSections[0];
+        string authHost = authSections[0];
 
         if(authSections.Length > 1)
         {
-            if(!int.TryParse(authSections[1], out port))
+            if(!int.TryParse(authSections[1], out authPort))
             {
                 logger.LogError("Invalid port found for auth endpoint.");
             }
         }
+
+        int worldPort = 8085;
+        string[] worldSections = worldEndpoint.Split(":");
+        string worldHost = worldSections[0];
+
+        if (worldSections.Length > 1)
+        {
+            if (!int.TryParse(worldSections[1], out worldPort))
+            {
+                logger.LogError("Invalid port found for world endpoint.");
+            }
+        }
+
 
         while (!stoppingToken.IsCancellationRequested && options.HealthChecksEnabled)
         {
             using (IServiceScope scope = serviceProvider.CreateAsyncScope())
             {
                 var now = DateTime.Now;
-                bool result = false;
-                var client = new TcpClient();
 
                 logger.LogInformation("Fetching auth server status..");
 
-                try
-                {
-                    await client.ConnectAsync(host, port);
-                    result = true;
-                }
-                catch(Exception ex)
-                {
-                    logger.LogError($"An error occured while trying to fetch auth server status: {ex.Message}");
-                    result = false;
-                }
-                finally
-                {
-                    client.Close();
-                }
-
                 var healthStore = scope.ServiceProvider.GetRequiredService<HealthCheckStoreService>();
-                healthStore.AuthStatus = result;
+
+                healthStore.AuthStatus = await TestConnection(authHost, authPort);
+                healthStore.WorldStatus = await TestConnection(worldHost, worldPort);
 
                 logger.LogInformation($"Finished fetching auth server status in {(DateTime.Now - now).TotalMilliseconds}ms.");
 
                 await Task.Delay(10000);
             }
         }
+    }
+
+    private async Task<bool> TestConnection(string host, int port)
+    {
+        var client = new TcpClient();
+        bool result = false;
+
+        logger.LogInformation($"Testing connection for host '{host}' port '{port}'.");
+
+        try
+        {
+            await client.ConnectAsync(host, port);
+            result = true;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError($"An error occured while trying to fetch auth server status: {ex.Message}");
+            result = false;
+        }
+        finally
+        {
+            client.Close();
+        }
+
+        return result;
     }
 }
